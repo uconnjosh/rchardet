@@ -114,7 +114,7 @@ module CharDet
         end
       elsif @_mInputState == EHighbyte
         if not @_mCharSetProbers or @_mCharSetProbers.empty?
-          @_mCharSetProbers = [  
+          @_mCharSetProbers = [
             MBCSGroupProber.new,
             SBCSGroupProber.new,
             Latin1Prober.new
