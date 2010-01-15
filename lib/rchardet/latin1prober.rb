@@ -15,12 +15,12 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -75,9 +75,9 @@ module CharDet
     ASV, ASV, ASV, ASV, ASV, ASO, ASO, ASO,   # F8 - FF
   ]
 
-  # 0 : illegal 
-  # 1 : very unlikely 
-  # 2 : normal 
+  # 0 : illegal
+  # 1 : very unlikely
+  # 2 : normal
   # 3 : very likely
   Latin1ClassModel = [
     # UDF OTH ASC ASS ACV ACO ASV ASO
@@ -110,15 +110,15 @@ module CharDet
     def feed(aBuf)
       aBuf = filter_with_english_letters(aBuf)
       aBuf.each_byte do |b|
-	c = b.chr
-	charClass = Latin1_CharToClass[c[0]]
-	freq = Latin1ClassModel[(@_mLastCharClass * CLASS_NUM) + charClass]
-	if freq == 0
-	  @_mState = ENotMe
-	  break
-	end
-	@_mFreqCounter[freq] += 1
-	@_mLastCharClass = charClass
+        c = b.chr
+        charClass = Latin1_CharToClass[c[0]]
+        freq = Latin1ClassModel[(@_mLastCharClass * CLASS_NUM) + charClass]
+        if freq == 0
+          @_mState = ENotMe
+          break
+        end
+        @_mFreqCounter[freq] += 1
+        @_mLastCharClass = charClass
       end
 
       return get_state()
@@ -126,19 +126,19 @@ module CharDet
 
     def get_confidence
       if get_state() == ENotMe
-	return 0.01
+        return 0.01
       end
 
-      total = @_mFreqCounter.inject{|a,b| a+b} 
+      total = @_mFreqCounter.inject{|a,b| a+b}
       if total < 0.01
-	confidence = 0.0
+        confidence = 0.0
       else
-	confidence = (@_mFreqCounter[3] / total) - (@_mFreqCounter[1] * 20.0 / total)
+        confidence = (@_mFreqCounter[3] / total) - (@_mFreqCounter[1] * 20.0 / total)
       end
       if confidence < 0.0
-	confidence = 0.0
+        confidence = 0.0
       end
-      # lower the confidence of latin1 so that other more accurate detector 
+      # lower the confidence of latin1 so that other more accurate detector
       # can take priority.
       confidence = confidence * 0.5
       return confidence
