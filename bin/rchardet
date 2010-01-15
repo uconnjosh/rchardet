@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'rchardet'
+
+rescue LoadError
+  file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+  require File.expand_path('../../lib/rchardet', file)
+end
+
+path_max = ARGV.max_by{|string| string.size }.size
+
+ARGV.each do |path|
+  next unless File.file?(path)
+  content = File.open(path, 'rb'){|io| io.read }
+  result =  CharDet.detect(content)
+  puts "%-#{path_max}s | %21s | %.3f" % [path, result[:encoding], result[:confidence]]
+end
