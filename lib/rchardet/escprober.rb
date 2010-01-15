@@ -50,11 +50,11 @@ module CharDet
       @_mDetectedCharset = nil
     end
 
-    def get_charset_name
+    def charset_name
       return @_mDetectedCharset
     end
 
-    def get_confidence
+    def confidence
       if @_mDetectedCharset
         return 0.99
       else
@@ -74,17 +74,17 @@ module CharDet
             @_mActiveSM -= 1
             if @_mActiveSM <= 0
               @_mState = ENotMe
-              return get_state()
+              return state()
             end
           elsif codingState == EItsMe
             @_mState = EFoundIt
-            @_mDetectedCharset = codingSM.get_coding_state_machine()
-            return get_state()
+            @_mDetectedCharset = codingSM.coding_state_machine()
+            return state()
           end
         end
       end
 
-      return get_state()
+      return state()
     end
   end
 end

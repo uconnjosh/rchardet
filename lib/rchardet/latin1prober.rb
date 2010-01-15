@@ -103,7 +103,7 @@ module CharDet
       super
     end
 
-    def get_charset_name
+    def charset_name
       return "windows-1252"
     end
 
@@ -111,7 +111,7 @@ module CharDet
       aBuf = filter_with_english_letters(aBuf)
       aBuf.each_byte do |b|
         c = b.chr
-        charClass = Latin1_CharToClass[c[0]]
+        charClass = Latin1_CharToClass[c[0].ord]
         freq = Latin1ClassModel[(@_mLastCharClass * CLASS_NUM) + charClass]
         if freq == 0
           @_mState = ENotMe
@@ -121,11 +121,11 @@ module CharDet
         @_mLastCharClass = charClass
       end
 
-      return get_state()
+      return state()
     end
 
-    def get_confidence
-      if get_state() == ENotMe
+    def confidence
+      if state() == ENotMe
         return 0.01
       end
 

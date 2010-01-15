@@ -50,13 +50,13 @@ module CharDet
       @_mBestGuessProber = nil
     end
 
-    def get_charset_name
+    def charset_name
       if not @_mBestGuessProber
-        get_confidence()
+        confidence()
         return nil unless @_mBestGuessProber
         #                self._mBestGuessProber = self._mProbers[0]
       end
-      return @_mBestGuessProber.get_charset_name()
+      return @_mBestGuessProber.charset_name()
     end
 
     def feed(aBuf)
@@ -67,21 +67,21 @@ module CharDet
         next unless st
         if st == EFoundIt
           @_mBestGuessProber = prober
-          return get_state()
+          return state()
         elsif st == ENotMe
           prober.active = false
           @_mActiveNum -= 1
           if @_mActiveNum <= 0
             @_mState = ENotMe
-            return get_state()
+            return state()
           end
         end
       end
-      return get_state()
+      return state()
     end
 
-    def get_confidence()
-      st = get_state()
+    def confidence()
+      st = state()
       if st == EFoundIt
         return 0.99
       elsif st == ENotMe
@@ -92,11 +92,11 @@ module CharDet
       for prober in @_mProbers
         next unless prober
         unless prober.active
-          $stderr << "#{prober.get_charset_name()} not active\n" if $debug
+          $stderr << "#{prober.charset_name()} not active\n" if $debug
           next
         end
-        cf = prober.get_confidence()
-        $stderr << "#{prober.get_charset_name} confidence = #{cf}\n" if $debug
+        cf = prober.confidence()
+        $stderr << "#{prober.charset_name} confidence = #{cf}\n" if $debug
         if bestConf < cf
           bestConf = cf
           @_mBestGuessProber = prober
@@ -106,7 +106,7 @@ module CharDet
       return bestConf
       #        else:
       #            self._mBestGuessProber = self._mProbers[0]
-      #            return self._mBestGuessProber.get_confidence()
+      #            return self._mBestGuessProber.confidence()
     end
   end
 end

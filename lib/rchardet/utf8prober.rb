@@ -42,8 +42,8 @@ module CharDet
       @_mNumOfMBChar = 0
     end
 
-    def get_charset_name
-      return "utf-8"
+    def charset_name
+      return "UTF-8"
     end
 
     def feed(aBuf)
@@ -57,26 +57,26 @@ module CharDet
           @_mState = EFoundIt
           break
         elsif codingState == EStart
-          if @_mCodingSM.get_current_charlen() >= 2
+          if @_mCodingSM.current_charlen >= 2
             @_mNumOfMBChar += 1
           end
         end
       end
 
-      if get_state() == EDetecting
-        if get_confidence() > SHORTCUT_THRESHOLD
+      if state == EDetecting
+        if confidence > SHORTCUT_THRESHOLD
           @_mState = EFoundIt
         end
       end
 
-      return get_state()
+      return state
     end
 
-    def get_confidence
+    def confidence
       unlike = 0.99
       if @_mNumOfMBChar < 6
-        for i in (0...@_mNumOfMBChar)
-          unlike = unlike * ONE_CHAR_PROB
+        (0...@_mNumOfMBChar).each do
+          unlike *= ONE_CHAR_PROB
         end
         return 1.0 - unlike
       else

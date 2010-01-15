@@ -35,7 +35,7 @@ module CharDet
       reset()
     end
 
-    def get_charset_name
+    def charset_name
       return "EUC-TW"
     end
   end

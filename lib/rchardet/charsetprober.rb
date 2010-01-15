@@ -37,19 +37,17 @@ module CharDet
       @_mState = EDetecting
     end
 
-    def get_charset_name
-      return nil
-    end
-
-    def feed(aBuf)
-    end
-
-    def get_state
+    def state
       return @_mState
     end
 
-    def get_confidence
+    def confidence
       return 0.0
+    end
+
+    def result
+      { encoding: Encoding.find(charset_name),
+        confidence: confidence }
     end
 
     def filter_high_bit_only(aBuf)

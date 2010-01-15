@@ -28,6 +28,8 @@
 
 module CharDet
   class CodingStateMachine
+    attr_accessor :active
+
     def initialize(sm)
       @_mModel = sm
       @_mCurrentBytePos = 0
@@ -42,7 +44,7 @@ module CharDet
     def next_state(c)
       # for each byte we get its class
       # if it is first byte, we also get byte length
-      byteCls = @_mModel['classTable'][c[0]]
+      byteCls = @_mModel['classTable'][c[0].ord]
       if @_mCurrentState == EStart
         @_mCurrentBytePos = 0
         @_mCurrentCharLen = @_mModel['charLenTable'][byteCls]
@@ -53,11 +55,11 @@ module CharDet
       return @_mCurrentState
     end
 
-    def get_current_charlen
+    def current_charlen
       return @_mCurrentCharLen
     end
 
-    def get_coding_state_machine
+    def coding_state_machine
       return @_mModel['name']
     end
   end

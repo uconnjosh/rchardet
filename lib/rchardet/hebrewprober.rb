@@ -214,7 +214,7 @@ module CharDet
       # We automatically filter out all 7-bit characters (replace them with spaces)
       # so the word boundary detection works properly. [MAP]
 
-      if get_state() == ENotMe
+      if state() == ENotMe
         # Both model probers say it's not them. No reason to continue.
         return ENotMe
       end
@@ -249,7 +249,7 @@ module CharDet
       return EDetecting
     end
 
-    def get_charset_name
+    def charset_name
       # Make the decision: is it Logical or Visual?
       # If the final letter score distance is dominant enough, rely on it.
       finalsub = @_mFinalCharLogicalScore - @_mFinalCharVisualScore
@@ -261,7 +261,7 @@ module CharDet
       end
 
       # It's not dominant enough, try to rely on the model scores instead.
-      modelsub = @_mLogicalProber.get_confidence() - @_mVisualProber.get_confidence()
+      modelsub = @_mLogicalProber.confidence() - @_mVisualProber.confidence()
       if modelsub > MIN_MODEL_DISTANCE
         return LOGICAL_HEBREW_NAME
       end
@@ -278,9 +278,9 @@ module CharDet
       return LOGICAL_HEBREW_NAME
     end
 
-    def get_state
+    def state
       # Remain active as long as any of the model probers are active.
-      if (@_mLogicalProber.get_state() == ENotMe) and (@_mVisualProber.get_state() == ENotMe)
+      if (@_mLogicalProber.state() == ENotMe) and (@_mVisualProber.state() == ENotMe)
         return ENotMe
       end
       return EDetecting

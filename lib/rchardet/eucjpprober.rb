@@ -41,7 +41,7 @@ module CharDet
       @_mContextAnalyzer.reset()
     end
 
-    def get_charset_name
+    def charset_name
       return "EUC-JP"
     end
 
@@ -50,14 +50,14 @@ module CharDet
       for i in (0...aLen)
         codingState = @_mCodingSM.next_state(aBuf[i..i])
         if codingState == EError
-          $stderr << "#{get_charset_name} prober hit error at byte #{i}\n" if $debug
+          $stderr << "#{charset_name} prober hit error at byte #{i}\n" if $debug
           @_mState = ENotMe
           break
         elsif codingState == EItsMe
           @_mState = EFoundIt
           break
         elsif codingState == EStart
-          charLen = @_mCodingSM.get_current_charlen()
+          charLen = @_mCodingSM.current_charlen()
           if i == 0
             @_mLastChar[1] = aBuf[0..0]
             @_mContextAnalyzer.feed(@_mLastChar, charLen)
@@ -71,17 +71,17 @@ module CharDet
 
       @_mLastChar[0] = aBuf[aLen-1..aLen-1]
 
-      if get_state() == EDetecting
-        if @_mContextAnalyzer.got_enough_data() and (get_confidence() > SHORTCUT_THRESHOLD)
+      if state() == EDetecting
+        if @_mContextAnalyzer.got_enough_data() and (confidence() > SHORTCUT_THRESHOLD)
           @_mState = EFoundIt
         end
       end
 
-      return get_state()
+      return state()
     end
 
-    def get_confidence
-      l = [@_mContextAnalyzer.get_confidence,@_mDistributionAnalyzer.get_confidence]
+    def confidence
+      l = [@_mContextAnalyzer.confidence,@_mDistributionAnalyzer.confidence]
       return l.max
     end
   end

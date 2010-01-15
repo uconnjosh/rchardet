@@ -55,9 +55,9 @@ module CharDet
       @_mFreqChar = 0 # characters that fall in our sampling range
     end
 
-    def get_charset_name
+    def charset_name
       if @_mNameProber
-        return @_mNameProber.get_charset_name()
+        return @_mNameProber.charset_name()
       else
         return @_mModel['charsetName']
       end
@@ -69,11 +69,11 @@ module CharDet
       end
       aLen = aBuf.length
       if not aLen
-        return get_state()
+        return state()
       end
       aBuf.each_byte do |b|
         c = b.chr
-        order = @_mModel['charToOrderMap'][c[0]]
+        order = @_mModel['charToOrderMap'][c[0].ord]
         if order < SYMBOL_CAT_ORDER
           @_mTotalChar += 1
         end
@@ -91,9 +91,9 @@ module CharDet
         @_mLastOrder = order
       end
 
-      if get_state() == EDetecting
+      if state() == EDetecting
         if @_mTotalSeqs > SB_ENOUGH_REL_THRESHOLD
-          cf = get_confidence()
+          cf = confidence()
           if cf > POSITIVE_SHORTCUT_THRESHOLD
             $stderr << "#{@_mModel['charsetName']} confidence = #{cf}, we have a winner\n" if $debug
             @_mState = EFoundIt
@@ -104,10 +104,10 @@ module CharDet
         end
       end
 
-      return get_state()
+      return state()
     end
 
-    def get_confidence
+    def confidence
       r = 0.01
       if @_mTotalSeqs > 0
         #            print self._mSeqCounters[POSITIVE_CAT], self._mTotalSeqs, self._mModel['mTypicalPositiveRatio']

@@ -50,7 +50,7 @@ module CharDet
       # # """feed a character with known length"""
       if aCharLen == 2
         # we only care about 2-bytes character in our distribution analysis
-        order = get_order(aStr)
+        order = order(aStr)
       else
         order = -1
       end
@@ -65,7 +65,7 @@ module CharDet
       end
     end
 
-    def get_confidence
+    def confidence
       # """return confidence based on existing data"""
       # if we didn't receive any character in our consideration range, return negative answer
       if @_mTotalChars <= 0
@@ -89,7 +89,7 @@ module CharDet
       return @_mTotalChars > ENOUGH_DATA_THRESHOLD
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # We do not handle characters based on the original encoding string, but
       # convert this encoding string to a number, here called order.
       # This allows multiple encodings of a language to share one frequency table.
@@ -105,13 +105,13 @@ module CharDet
       @_mTypicalDistributionRatio = EUCTW_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for euc-TW encoding, we are interested
       #   first  byte range: 0xc4 -- 0xfe
       #   second byte range: 0xa1 -- 0xfe
       # no validation needed here. State machine has done that
-      if aStr[0..0] >= "\xC4"
-        return 94 * (aStr[0] - 0xC4) + aStr[1] - 0xA1
+      if aStr[0] >= "\xC4"
+        return 94 * (aStr[0].ord - 0xC4) + aStr[1].ord - 0xA1
       else
         return -1
       end
@@ -126,13 +126,13 @@ module CharDet
       @_mTypicalDistributionRatio = EUCKR_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for euc-KR encoding, we are interested
       #   first  byte range: 0xb0 -- 0xfe
       #   second byte range: 0xa1 -- 0xfe
       # no validation needed here. State machine has done that
-      if aStr[0..0] >= "\xB0"
-        return 94 * (aStr[0] - 0xB0) + aStr[1] - 0xA1
+      if aStr[0] >= "\xB0"
+        return 94 * (aStr[0].ord - 0xB0) + aStr[1].ord - 0xA1
       else
         return -1
       end
@@ -147,13 +147,13 @@ module CharDet
       @_mTypicalDistributionRatio = GB2312_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for GB2312 encoding, we are interested
       #  first  byte range: 0xb0 -- 0xfe
       #  second byte range: 0xa1 -- 0xfe
       # no validation needed here. State machine has done that
-      if (aStr[0..0] >= "\xB0") and (aStr[1..1] >= "\xA1")
-        return 94 * (aStr[0] - 0xB0) + aStr[1] - 0xA1
+      if (aStr[0] >= "\xB0") and (aStr[1] >= "\xA1")
+        return 94 * (aStr[0].ord - 0xB0) + aStr[1].ord - 0xA1
       else
         return -1
       end
@@ -168,16 +168,16 @@ module CharDet
       @_mTypicalDistributionRatio = BIG5_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for big5 encoding, we are interested
       #   first  byte range: 0xa4 -- 0xfe
       #   second byte range: 0x40 -- 0x7e , 0xa1 -- 0xfe
       # no validation needed here. State machine has done that
-      if aStr[0..0] >= "\xA4"
-        if aStr[1..1] >= "\xA1"
-          return 157 * (aStr[0] - 0xA4) + aStr[1] - 0xA1 + 63
+      if aStr[0] >= "\xA4"
+        if aStr[1] >= "\xA1"
+          return 157 * (aStr[0].ord - 0xA4) + aStr[1].ord - 0xA1 + 63
         else
-          return 157 * (aStr[0] - 0xA4) + aStr[1] - 0x40
+          return 157 * (aStr[0].ord - 0xA4) + aStr[1].ord - 0x40
         end
       else
         return -1
@@ -193,21 +193,21 @@ module CharDet
       @_mTypicalDistributionRatio = JIS_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for sjis encoding, we are interested
       #   first  byte range: 0x81 -- 0x9f , 0xe0 -- 0xfe
       #   second byte range: 0x40 -- 0x7e,  0x81 -- oxfe
       # no validation needed here. State machine has done that
       aStr = aStr[0..1].join if aStr.class == Array
-      if (aStr[0..0] >= "\x81") and (aStr[0..0] <= "\x9F")
-        order = 188 * (aStr[0] - 0x81)
-      elsif (aStr[0..0] >= "\xE0") and (aStr[0..0] <= "\xEF")
-        order = 188 * (aStr[0] - 0xE0 + 31)
+      if (aStr[0] >= "\x81") and (aStr[0] <= "\x9F")
+        order = 188 * (aStr[0].ord - 0x81)
+      elsif (aStr[0] >= "\xE0") and (aStr[0] <= "\xEF")
+        order = 188 * (aStr[0].ord - 0xE0 + 31)
       else
         return -1
       end
-      order = order + aStr[1] - 0x40
-      if aStr[1..1] > "\x7F"
+      order = order + aStr[1].ord - 0x40
+      if aStr[1] > "\x7F"
         order =- 1
       end
       return order
@@ -222,13 +222,13 @@ module CharDet
       @_mTypicalDistributionRatio = JIS_TYPICAL_DISTRIBUTION_RATIO
     end
 
-    def get_order(aStr)
+    def order(aStr)
       # for euc-JP encoding, we are interested
       #   first  byte range: 0xa0 -- 0xfe
       #   second byte range: 0xa1 -- 0xfe
       # no validation needed here. State machine has done that
       if aStr[0..0] >= "\xA0"
-        return 94 * (aStr[0] - 0xA1) + aStr[1] - 0xa1
+        return 94 * (aStr[0].ord - 0xA1) + aStr[1].ord - 0xa1
       else
         return -1
       end
