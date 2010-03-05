@@ -2,17 +2,102 @@
 
 begin
   require 'rchardet'
-
 rescue LoadError
   file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
   require File.expand_path('../../lib/rchardet', file)
 end
 
-path_max = ARGV.max_by{|string| string.size }.size
+require 'optparse'
 
-ARGV.each do |path|
-  next unless File.file?(path)
-  content = File.open(path, 'rb'){|io| io.read }
-  result =  CharDet.detect(content)
-  puts "%-#{path_max}s | %21s | %.3f" % [path, result[:encoding], result[:confidence]]
+show = [:encoding]
+op = OptionParser.new('', 24, '  '){|o|
+  o.banner = "Usage: rchardet [options] [file, ...]"
+  o.separator ""
+  o.separator "Options:"
+  o.on('-f', '--file', 'Show file names'){ show << :file }
+  o.on('-c', '--confidence', 'Show confidence about encoding'){ show << :confidence }
+  o.on('-h', '--help', 'Display this help'){ puts o; exit }
+  o.separator ""
+  o.separator "Description:"
+  o.separator "rchardet tries to determine the encoding of given input using"
+  o.separator "algorithms commonly used for detection of encoding of websites."
+  o.separator ""
+  o.separator "The standard usage is to pass one or more filenames as arguments."
+  o.separator "If a filename is '-', rchardet will read from stdin instead,"
+  o.separator "this is also the case when no file arguments are given."
+  o.separator ""
+  o.separator "Examples:"
+  o.separator "rchardet some_ascii.txt"
+  o.separator "echo something | rchardet"
+}
+op.parse!(ARGV)
+
+if ARGV.empty? && ARGF.path == '-' # pipe
+  ARGF.set_encoding('BINARY')
+  content = ARGF.read
+  result = CharDet.detect(content)
+  encoding, confidence = result.values_at(:encoding, :confidence)
+
+  if show.include?(:confidence)
+    if show.include?(:file)
+      puts "%s | %.3f | %s" % [encoding, confidence, ARGF.path]
+    else
+      puts "%s | %.3f" % [encoding, confidence]
+    end
+  elsif show.include?(:file)
+    puts "%s | %s" % [encoding, ARGF.path]
+  else
+    puts "%s" % [encoding]
+  end
+else
+  skip = false
+  results = {}
+  filename = ARGF.path
+  detector = CharDet::UniversalDetector.new
+  detector.reset
+
+  ARGF.set_encoding('BINARY')
+  ARGF.each do |line|
+    current_filename = ARGF.path
+    next if skip && current_filename == filename
+
+    if current_filename == filename
+      detector.feed(line)
+      result = detector.result
+
+      if result[:confidence] > 0.9 # skip the rest
+        skip = true
+        results[filename] = result.dup
+        detector.close
+        detector = CharDet::UniversalDetector.new
+        detector.reset
+      end
+    else
+      detector.close
+      results[filename] = detector.result
+      filename = current_filename
+      skip = false
+      detector = CharDet::UniversalDetector.new
+      detector.reset
+    end
+  end
+
+  detector.close
+  results[filename] ||= detector.result
+
+  results.each do |path, result|
+    encoding, confidence = result.values_at(:encoding, :confidence)
+
+    if show.include?(:confidence)
+      if show.include?(:file)
+        puts "%s | %.3f | %s" % [encoding, confidence, path]
+      else
+        puts "%s | %.3f" % [encoding, confidence]
+      end
+    elsif show.include?(:file)
+      puts "%s | %s" % [encoding, path]
+    else
+      puts "%s" % [encoding]
+    end
+  end
 end
