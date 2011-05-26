@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name              = "rchardet"
-  s.version           = "1.3.1"
+  s.name              = "edouard-rchardet"
+  s.version           = "1.3.4"
   s.author            = "Jeff Hodges"
   s.email             = "jeff at somethingsimilar dot com"
   s.homepage          = "http://github.com/mcommons/rchardet/tree/master"
