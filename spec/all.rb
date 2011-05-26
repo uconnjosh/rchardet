@@ -32,6 +32,18 @@ describe CharDet do
       encoding: Encoding::EUC_JP, confidence: 0.99
     }
   end
+  
+  should 'detect UTF-16BE' do
+    chardet_spec_detect('UTF-16BE').should == {
+      encoding: Encoding::UTF_16BE, confidence: 1
+    }
+  end
+
+  should 'detect UTF-16LE' do
+    chardet_spec_detect('UTF-16LE').should == {
+      encoding: Encoding::UTF_16LE, confidence: 1
+    }
+  end  
 end
 
 __END__
@@ -54,25 +66,10 @@ __END__
     end
   end
 
-  describe 'UTF-16BE' do
-    it 'detects correctly' do
-      chardet_spec_detect('UTF-16BE').should == {
-        encoding: Encoding::UTF_16BE, confidence: 0.99
-      }
-    end
-  end
-
   describe 'UTF-32BE' do
     it 'detects correctly' do
       chardet_spec_detect('UTF-32BE').should == {
         encoding: Encoding::UTF_32BE, confidence: 0.99
-      }
-    end
-  end
-  describe 'UTF-8' do
-    it 'detects correctly' do
-      chardet_spec_detect('UTF-8').should == {
-        encoding: Encoding::UTF_8, confidence: 0.99
       }
     end
   end
@@ -81,14 +78,6 @@ __END__
     it 'detects correctly' do
       chardet_spec_detect('EUC-JP').should == {
         encoding: nil, confidence: 0.99
-      }
-    end
-  end
-
-  describe 'UTF-16LE' do
-    it 'detects correctly' do
-      chardet_spec_detect('UTF-16LE').should == {
-        encoding: Encoding::UTF_16LE, confidence: 0.99
       }
     end
   end
