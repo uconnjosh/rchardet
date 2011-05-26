@@ -56,12 +56,16 @@ require 'rchardet/universaldetector'
 require 'rchardet/utf8prober'
 
 module CharDet
-  VERSION = "1.3"
   def CharDet.detect(aBuf)
     u = UniversalDetector.new
     u.reset
     u.feed(aBuf)
     u.close
     u.result
+  end
+  
+  def self.version
+    hash = YAML.load_file File.expand_path('../../version.yml', __FILE__)
+    [hash[:major], hash[:minor], hash[:tiny], hash[:patch]].join('.')
   end
 end
