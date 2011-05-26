@@ -14,4 +14,5 @@ Gem::Specification.new do |s|
   s.has_rdoc          = false # TODO: fix
   s.extra_rdoc_files  = ['README', 'COPYING']
   s.rubyforge_project = 'rchardet'
+  s.add_development_dependency("bacon", ["~> 1.1.0"])
 end
