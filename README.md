@@ -5,6 +5,11 @@ rchardet is an encoding auto-detection library in Ruby. This library is a port o
 
 This fork is compatible with ruby 1.9, and runs in production at [webtranslateit.com](https://webtranslateit.com).
 
+This library is deprecated
+--------------------------
+
+I don’t maintain this library anymore. It contains a few bugs and often identifies files with a wrong encoding. I switched to [charlock_holmes](https://github.com/brianmario/charlock_holmes), a ruby wrapper around [ICU](http://site.icu-project.org/), which works beautifully.
+
 Usage
 -----
 
