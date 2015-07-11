@@ -36,7 +36,7 @@ module CharDet
   class UniversalDetector
     attr_accessor :result
     def initialize
-      @_highBitDetector = /[\x80-\xFF]/
+      @_highBitDetector = /[\\x80-\xFF]/
       @_escDetector = /(\033|\~\{)/
       @_mEscCharSetProber = nil
       @_mCharSetProbers = []
